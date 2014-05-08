@@ -11,7 +11,7 @@ import 'package:shelf/shelf.dart';
 // mime type handling
 // hidden files
 
-Handler getHandler(String fileSystemPath) {
+Handler getHandler(String fileSystemPath, {bool restrictSymbolicLinks: true}) {
   var rootDir = new Directory(fileSystemPath);
   fileSystemPath = rootDir.resolveSymbolicLinksSync();
 
@@ -31,7 +31,10 @@ Handler getHandler(String fileSystemPath) {
       return new Response.notFound('Not Found');
     }
 
-    var resolvedPath = file.resolveSymbolicLinksSync();
+    var resolvedPath = file.path;
+    if(restrictSymbolicLinks) {
+      resolvedPath = file.resolveSymbolicLinksSync();
+    }
 
     // Do not serve a file outside of the original fileSystemPath
     if (!p.isWithin(fileSystemPath, resolvedPath)) {
