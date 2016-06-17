@@ -27,9 +27,14 @@ import 'util.dart';
 ///
 /// If no [defaultDocument] is found and [listDirectories] is true, then the
 /// handler produces a listing of the directory.
+///
+/// If [useHeaderBytesForContentType] is set to false, then the content type will
+/// be determined by the file's extension, as is the mime library's default behavior.
+/// Setting it to true will cause up tot he first 25 bytes of the file to be read
+/// and used to determine the content type.
 Handler createStaticHandler(String fileSystemPath,
     {bool serveFilesOutsidePath: false, String defaultDocument,
-    bool listDirectories: false}) {
+    bool listDirectories: false, bool useHeaderBytesForContentType: false}) {
   var rootDir = new Directory(fileSystemPath);
   if (!rootDir.existsSync()) {
     throw new ArgumentError('A directory corresponding to fileSystemPath '
@@ -44,7 +49,7 @@ Handler createStaticHandler(String fileSystemPath,
     }
   }
 
-  return (Request request) {
+  return (Request request) async {
     var segs = [fileSystemPath]..addAll(request.url.pathSegments);
 
     var fsPath = p.joinAll(segs);
@@ -100,7 +105,19 @@ Handler createStaticHandler(String fileSystemPath,
       HttpHeaders.LAST_MODIFIED: formatHttpDate(fileStat.changed)
     };
 
-    var contentType = mime.lookupMimeType(file.path);
+
+    var contentType;
+    if(useHeaderBytesForContentType) {
+      int length = 25; // The longest file header identifier
+      int file_length =file.lengthSync();
+      if(file_length<length)
+        length = file_length;
+      List<int> magicBytes = await file.openRead(0,length).single;
+      contentType = mime.lookupMimeType(file.path, headerBytes: magicBytes);
+    } else {
+      contentType = mime.lookupMimeType(file.path);
+    }
+
     if (contentType != null) {
       headers[HttpHeaders.CONTENT_TYPE] = contentType;
     }
