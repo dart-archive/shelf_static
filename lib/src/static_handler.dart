@@ -36,7 +36,8 @@ Handler createStaticHandler(String fileSystemPath,
     {bool serveFilesOutsidePath: false,
     String defaultDocument,
     bool listDirectories: false,
-    bool useHeaderBytesForContentType: false}) {
+    bool useHeaderBytesForContentType: false,
+    bool addContentLength: true}) {
   var rootDir = new Directory(fileSystemPath);
   if (!rootDir.existsSync()) {
     throw new ArgumentError('A directory corresponding to fileSystemPath '
@@ -103,9 +104,12 @@ Handler createStaticHandler(String fileSystemPath,
     }
 
     var headers = <String, String>{
-      HttpHeaders.CONTENT_LENGTH: fileStat.size.toString(),
       HttpHeaders.LAST_MODIFIED: formatHttpDate(fileStat.changed)
     };
+
+    if (addContentLength) {
+      headers[HttpHeaders.CONTENT_LENGTH] = fileStat.size.toString();
+    }
 
     String contentType;
     if (useHeaderBytesForContentType) {
