@@ -78,8 +78,10 @@ Response listDirectory(String fileSystemPath, String dirPath) {
   }
 
   String heading = path.relative(dirPath, from: fileSystemPath);
-  if (heading == '.') heading = '/';
-  else heading = '/$heading/';
+  if (heading == '.')
+    heading = '/';
+  else
+    heading = '/$heading/';
 
   add(_getHeader(sanitizer.convert(heading)));
   new Directory(dirPath).list().listen((FileSystemEntity entity) {

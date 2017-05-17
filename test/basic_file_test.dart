@@ -35,7 +35,8 @@ void main() {
         r"OJE7pB/VXmF3CdseucmjxaAruR41Pl9p/Gbyoq5B9FeL2OR7zJ+3aC/X8QdQCyIArPs"
         r"HkQAAAABJRU5ErkJggg==";
 
-    var webpBytesContent = r"UklGRiQAAABXRUJQVlA4IBgAAAAwAQCdASoBAAEAAQAcJaQAA3AA/v3AgAA=";
+    var webpBytesContent =
+        r"UklGRiQAAABXRUJQVlA4IBgAAAAwAQCdASoBAAEAAQAcJaQAA3AA/v3AgAA=";
 
     d.dir('files', [
       d.file('test.txt', 'test txt content'),
@@ -226,8 +227,36 @@ void main() {
     test('header_bytes_test_webp should be image/webp', () {
       schedule(() {
         final mime.MimeTypeResolver resolver = new mime.MimeTypeResolver();
-        resolver.addMagicNumber(<int>[0x52,0x49,0x46,0x46,0x00,0x00,0x00,0x00,0x57,0x45,0x42,0x50], "image/webp",
-                                mask: <int>[0xFF,0xFF,0xFF,0xFF,0x00,0x00,0x00,0x00,0xFF,0xFF,0xFF,0xFF]);
+        resolver.addMagicNumber(
+            <int>[
+              0x52,
+              0x49,
+              0x46,
+              0x46,
+              0x00,
+              0x00,
+              0x00,
+              0x00,
+              0x57,
+              0x45,
+              0x42,
+              0x50
+            ],
+            "image/webp",
+            mask: <int>[
+              0xFF,
+              0xFF,
+              0xFF,
+              0xFF,
+              0x00,
+              0x00,
+              0x00,
+              0x00,
+              0xFF,
+              0xFF,
+              0xFF,
+              0xFF
+            ]);
         final dynamic handler = createStaticHandler(d.defaultRoot,
             useHeaderBytesForContentType: true, contentTypeResolver: resolver);
 
@@ -237,6 +266,5 @@ void main() {
         });
       });
     });
-
   });
 }
