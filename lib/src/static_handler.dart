@@ -64,7 +64,7 @@ Handler createStaticHandler(String fileSystemPath,
 
     var entityType = FileSystemEntity.typeSync(fsPath, followLinks: true);
 
-    File file = null;
+    File file;
 
     if (entityType == FileSystemEntityType.FILE) {
       file = new File(fsPath);
