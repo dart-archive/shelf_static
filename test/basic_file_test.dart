@@ -230,33 +230,13 @@ void main() {
         final mime.MimeTypeResolver resolver = new mime.MimeTypeResolver();
         resolver.addMagicNumber(
             <int>[
-              0x52,
-              0x49,
-              0x46,
-              0x46,
-              0x00,
-              0x00,
-              0x00,
-              0x00,
-              0x57,
-              0x45,
-              0x42,
-              0x50
+              0x52, 0x49, 0x46, 0x46, 0x00, 0x00, //
+              0x00, 0x00, 0x57, 0x45, 0x42, 0x50
             ],
             "image/webp",
             mask: <int>[
-              0xFF,
-              0xFF,
-              0xFF,
-              0xFF,
-              0x00,
-              0x00,
-              0x00,
-              0x00,
-              0xFF,
-              0xFF,
-              0xFF,
-              0xFF
+              0xFF, 0xFF, 0xFF, 0xFF, 0x00, 0x00, //
+              0x00, 0x00, 0xFF, 0xFF, 0xFF, 0xFF
             ]);
         final dynamic handler = createStaticHandler(d.defaultRoot,
             useHeaderBytesForContentType: true, contentTypeResolver: resolver);

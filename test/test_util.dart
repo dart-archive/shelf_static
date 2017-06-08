@@ -53,8 +53,8 @@ class _SecondResolutionDateTimeMatcher extends Matcher {
     return datesEqualToSecond(_target, item);
   }
 
-  Description describe(Description descirption) =>
-      descirption.add('Must be at the same moment as $_target with resolution '
+  Description describe(Description description) =>
+      description.add('Must be at the same moment as $_target with resolution '
           'to the second.');
 }
 
