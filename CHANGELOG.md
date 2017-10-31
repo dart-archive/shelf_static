@@ -1,6 +1,6 @@
 ## 0.2.7
 
-* Require at least Dart SDK 1.23.0.
+* Require at least Dart SDK 1.24.0.
 
 ## 0.2.6
 
