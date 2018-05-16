@@ -1,3 +1,7 @@
+## 0.2.7+2
+
+* Remove deprecated `dart:io` constants.
+
 ## 0.2.7+1
 
 * Updated SDK version to 2.0.0-dev.17.0
