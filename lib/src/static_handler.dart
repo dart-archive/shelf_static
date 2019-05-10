@@ -16,7 +16,8 @@ import 'directory_listing.dart';
 import 'util.dart';
 
 /// The default resolver for MIME types based on file extensions.
-final _defaultMimeTypeResolver = new MimeTypeResolver();
+final _defaultMimeTypeResolver = new MimeTypeResolver()
+  ..addExtension('css', 'text/css');
 
 // TODO option to exclude hidden files?
 
