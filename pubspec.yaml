@@ -1,5 +1,5 @@
 name: shelf_static
-version: 0.2.9+2
+version: 1.0.0-dev
 description: Static file server support for shelf
 repository: https://github.com/dart-lang/shelf_static
 
@@ -17,3 +17,7 @@ dev_dependencies:
   args: ^2.0.0
   test: ^1.16.0
   test_descriptor: ^2.0.0
+
+dependency_overrides:
+  shelf_packages_handler: ^2.0.1
+  test: ^1.16.0
