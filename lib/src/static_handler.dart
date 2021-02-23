@@ -41,10 +41,10 @@ final _defaultMimeTypeResolver = MimeTypeResolver();
 /// detection.
 Handler createStaticHandler(String fileSystemPath,
     {bool serveFilesOutsidePath = false,
-    String defaultDocument,
+    String? defaultDocument,
     bool listDirectories = false,
     bool useHeaderBytesForContentType = false,
-    MimeTypeResolver contentTypeResolver}) {
+    MimeTypeResolver? contentTypeResolver}) {
   final rootDir = Directory(fileSystemPath);
   if (!rootDir.existsSync()) {
     throw ArgumentError('A directory corresponding to fileSystemPath '
@@ -59,16 +59,17 @@ Handler createStaticHandler(String fileSystemPath,
     }
   }
 
-  contentTypeResolver ??= _defaultMimeTypeResolver;
+  final contentTypeResolverNonNullable =
+      contentTypeResolver ??= _defaultMimeTypeResolver;
 
   return (Request request) {
     final segs = [fileSystemPath, ...request.url.pathSegments];
 
     final fsPath = p.joinAll(segs);
 
-    final entityType = FileSystemEntity.typeSync(fsPath, followLinks: true);
+    final entityType = FileSystemEntity.typeSync(fsPath);
 
-    File file;
+    File? file;
 
     if (entityType == FileSystemEntityType.file) {
       file = File(fsPath);
@@ -84,6 +85,7 @@ Handler createStaticHandler(String fileSystemPath,
     if (file == null) {
       return Response.notFound('Not Found');
     }
+    final fileNonNullable = file;
 
     if (!serveFilesOutsidePath) {
       final resolvedPath = file.resolveSymbolicLinksSync();
@@ -105,16 +107,20 @@ Handler createStaticHandler(String fileSystemPath,
     return _handleFile(request, file, () async {
       if (useHeaderBytesForContentType) {
         final length = math.min(
-            contentTypeResolver.magicNumbersMaxLength, file.lengthSync());
+            contentTypeResolverNonNullable.magicNumbersMaxLength,
+            fileNonNullable.lengthSync());
 
         final byteSink = ByteAccumulatorSink();
 
-        await file.openRead(0, length).listen(byteSink.add).asFuture();
+        await fileNonNullable
+            .openRead(0, length)
+            .listen(byteSink.add)
+            .asFuture();
 
-        return contentTypeResolver.lookup(file.path,
+        return contentTypeResolverNonNullable.lookup(fileNonNullable.path,
             headerBytes: byteSink.bytes);
       } else {
-        return contentTypeResolver.lookup(file.path);
+        return contentTypeResolverNonNullable.lookup(fileNonNullable.path);
       }
     });
   };
@@ -132,7 +138,7 @@ Response _redirectToAddTrailingSlash(Uri uri) {
   return Response.movedPermanently(location.toString());
 }
 
-File _tryDefaultFile(String dirPath, String defaultFile) {
+File? _tryDefaultFile(String dirPath, String? defaultFile) {
   if (defaultFile == null) return null;
 
   final filePath = p.join(dirPath, defaultFile);
@@ -154,7 +160,7 @@ File _tryDefaultFile(String dirPath, String defaultFile) {
 /// This uses the given [contentType] for the Content-Type header. It defaults
 /// to looking up a content type based on [path]'s file extension, and failing
 /// that doesn't sent a [contentType] header at all.
-Handler createFileHandler(String path, {String url, String contentType}) {
+Handler createFileHandler(String path, {String? url, String? contentType}) {
   final file = File(path);
   if (!file.existsSync()) {
     throw ArgumentError.value(path, 'path', 'does not exist.');
@@ -177,7 +183,7 @@ Handler createFileHandler(String path, {String url, String contentType}) {
 /// indicates that it has the latest version of a file. Otherwise, it calls
 /// [getContentType] and uses it to populate the Content-Type header.
 Future<Response> _handleFile(Request request, File file,
-    FutureOr<String> Function() getContentType) async {
+    FutureOr<String?> Function() getContentType) async {
   final stat = file.statSync();
   final ifModifiedSince = request.ifModifiedSince;
 
