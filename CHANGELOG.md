@@ -1,5 +1,7 @@
-## 1.1.0-dev
+## 1.1.0
 
+* Correctly send 405 (Method Not Allowed) – for requests that are not `HEAD` or
+  `GET` method.
 * Correctly handle `HEAD` requests.
 
 ## 1.0.0

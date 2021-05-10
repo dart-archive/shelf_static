@@ -75,6 +75,9 @@ Handler createStaticHandler(String fileSystemPath,
     } else if (entityType == FileSystemEntityType.directory) {
       fileFound = _tryDefaultFile(fsPath, defaultDocument);
       if (fileFound == null && listDirectories) {
+        if (!_getMethods.contains(request.method)) {
+          return _methodNotAllowed();
+        }
         final uri = request.requestedUri;
         if (!uri.path.endsWith('/')) return _redirectToAddTrailingSlash(uri);
         return listDirectory(fileSystemPath, fsPath);
@@ -82,7 +85,7 @@ Handler createStaticHandler(String fileSystemPath,
     }
 
     if (fileFound == null) {
-      return Response.notFound('Not Found');
+      return notFound();
     }
     final file = fileFound;
 
@@ -91,7 +94,7 @@ Handler createStaticHandler(String fileSystemPath,
 
       // Do not serve a file outside of the original fileSystemPath
       if (!p.isWithin(fileSystemPath, resolvedPath)) {
-        return Response.notFound('Not Found');
+        return notFound();
       }
     }
 
@@ -166,7 +169,7 @@ Handler createFileHandler(String path, {String? url, String? contentType}) {
   url ??= p.toUri(p.basename(path)).toString();
 
   return (request) {
-    if (request.url.path != url) return Response.notFound('Not Found');
+    if (request.url.path != url) return notFound();
     return _handleFile(request, file, () => mimeType);
   };
 }
@@ -178,6 +181,10 @@ Handler createFileHandler(String path, {String? url, String? contentType}) {
 /// [getContentType] and uses it to populate the Content-Type header.
 Future<Response> _handleFile(Request request, File file,
     FutureOr<String?> Function() getContentType) async {
+  if (!_getMethods.contains(request.method)) {
+    return _methodNotAllowed();
+  }
+
   final stat = file.statSync();
   final ifModifiedSince = request.ifModifiedSince;
 
@@ -201,3 +208,13 @@ Future<Response> _handleFile(Request request, File file,
     headers: headers,
   );
 }
+
+/// HTTP methods which return OK (200) responses with static file servers.
+const _getMethods = {'GET', 'HEAD'};
+
+/// See https://developer.mozilla.org/en-US/docs/Web/HTTP/Status/405 and
+/// https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Allow
+Response _methodNotAllowed() => Response(
+      405,
+      headers: {'Allow': _getMethods.join(', ')},
+    );

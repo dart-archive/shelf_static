@@ -8,6 +8,7 @@ import 'dart:io';
 import 'package:http_parser/http_parser.dart';
 import 'package:mime/mime.dart' as mime;
 import 'package:path/path.dart' as p;
+import 'package:shelf/src/handler.dart';
 import 'package:shelf_static/shelf_static.dart';
 import 'package:test/test.dart';
 import 'package:test_descriptor/test_descriptor.dart' as d;
@@ -233,4 +234,29 @@ void main() {
       expect(response.mimeType, 'image/webp');
     });
   });
+
+  group('HTTP method', () {
+    for (var method in _httpMethods) {
+      test('$method - file', () async {
+        final handler = createStaticHandler(d.sandbox);
+
+        await _testBadMethod(handler, method, '/root.txt');
+      });
+
+      test('$method - directory', () async {
+        final handler = createStaticHandler(d.sandbox, listDirectories: true);
+
+        await _testBadMethod(handler, method, '/');
+      });
+    }
+  });
 }
+
+Future<void> _testBadMethod(Handler handler, String method, String path) async {
+  final response = await makeRequest(handler, path, method: method);
+
+  expect(response.statusCode, HttpStatus.methodNotAllowed);
+  expect(response.headers['allow'], 'GET, HEAD');
+}
+
+const _httpMethods = {'PUT', 'POST', 'DELETE', 'PATCH'};
