@@ -35,7 +35,7 @@ Handler _rootHandler(String? path, Handler handler) {
 
   return (Request request) {
     if (!_ctx.isWithin('/$path', request.requestedUri.path)) {
-      return Response.notFound('not found');
+      return notFound();
     }
     assert(request.handlerPath == '/');
 
