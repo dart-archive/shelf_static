@@ -85,6 +85,18 @@ void main() {
         'bytes 0-4/8',
       );
     });
+    test('is invalid ranges 8 to 9', () async {
+      final handler = createFileHandler(p.join(d.sandbox, 'file.txt'));
+      final response = await makeRequest(
+        handler,
+        '/file.txt',
+        headers: {'range': 'bytes=8-9'},
+      );
+      expect(
+        response.statusCode,
+        equals(HttpStatus.requestedRangeNotSatisfiable),
+      );
+    });
   });
 
   group('throws an ArgumentError for', () {
