@@ -221,7 +221,10 @@ Future<Response> _handleFile(Request request, File file,
           end = length - 1;
         }
         if (start >= length) {
-          return Response(HttpStatus.requestedRangeNotSatisfiable);
+          return Response(
+            HttpStatus.requestedRangeNotSatisfiable,
+            headers: headers,
+          );
         }
 
         // Override Content-Length with the actual bytes sent.

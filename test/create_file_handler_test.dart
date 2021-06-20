@@ -117,6 +117,10 @@ void main() {
         headers: {'range': 'bytes=8-9'},
       );
       expect(
+        response.headers[HttpHeaders.acceptRangesHeader],
+        'bytes',
+      );
+      expect(
         response.statusCode,
         equals(HttpStatus.requestedRangeNotSatisfiable),
       );
