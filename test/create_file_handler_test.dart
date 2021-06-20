@@ -81,6 +81,10 @@ void main() {
       );
       expect(response.statusCode, equals(HttpStatus.partialContent));
       expect(
+        response.headers[HttpHeaders.acceptRangesHeader],
+        'bytes',
+      );
+      expect(
         response.headers[HttpHeaders.contentRangeHeader],
         'bytes 0-4/8',
       );
@@ -95,6 +99,10 @@ void main() {
       expect(
         response.statusCode,
         equals(HttpStatus.partialContent),
+      );
+      expect(
+        response.headers[HttpHeaders.acceptRangesHeader],
+        'bytes',
       );
       expect(
         response.headers[HttpHeaders.contentRangeHeader],
