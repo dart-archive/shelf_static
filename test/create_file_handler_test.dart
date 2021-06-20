@@ -85,7 +85,23 @@ void main() {
         'bytes 0-4/8',
       );
     });
-    test('is invalid ranges 8 to 9', () async {
+    test('at the end of has overflow from 0 to 9', () async {
+      final handler = createFileHandler(p.join(d.sandbox, 'file.txt'));
+      final response = await makeRequest(
+        handler,
+        '/file.txt',
+        headers: {'range': 'bytes=0-9'},
+      );
+      expect(
+        response.statusCode,
+        equals(HttpStatus.partialContent),
+      );
+      expect(
+        response.headers[HttpHeaders.contentRangeHeader],
+        'bytes 0-7/8',
+      );
+    });
+    test('at the start of has overflow from 8 to 9', () async {
       final handler = createFileHandler(p.join(d.sandbox, 'file.txt'));
       final response = await makeRequest(
         handler,
