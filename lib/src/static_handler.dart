@@ -189,7 +189,6 @@ Future<Response> _handleFile(Request request, File file,
   }
 
   final headers = {
-    HttpHeaders.contentLengthHeader: stat.size.toString(),
     HttpHeaders.lastModifiedHeader: formatHttpDate(stat.modified),
     HttpHeaders.acceptRangesHeader: 'bytes',
   };
@@ -224,8 +223,6 @@ Future<Response> _handleFile(Request request, File file,
             end = length - 1;
           }
           if (start >= length) {
-            // Remove content-length, since this is now an error!
-            headers.remove(HttpHeaders.contentLengthHeader);
             return Response(
               HttpStatus.requestedRangeNotSatisfiable,
               headers: headers,
@@ -255,6 +252,8 @@ Future<Response> _handleFile(Request request, File file,
       }
     }
   }
+  headers[HttpHeaders.contentLengthHeader] = stat.size.toString();
+
   return Response.ok(
     request.method == 'HEAD' ? null : file.openRead(),
     headers: headers,
