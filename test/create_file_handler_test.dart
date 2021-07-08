@@ -116,7 +116,7 @@ void main() {
         '/file.txt',
         headers: {'range': 'bytes=8-9'},
       );
-      expect(response.headers, isNot(contains('content-length')));
+      expect(response.headers, containsPair('content-length', '0'));
       expect(
         response.headers[HttpHeaders.acceptRangesHeader],
         'bytes',
