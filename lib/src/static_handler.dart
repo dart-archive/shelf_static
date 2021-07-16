@@ -192,14 +192,13 @@ Future<Response> _handleFile(Request request, File file,
   final headers = {
     HttpHeaders.lastModifiedHeader: formatHttpDate(stat.modified),
     HttpHeaders.acceptRangesHeader: 'bytes',
-    HttpHeaders.contentLengthHeader: '${stat.size}',
     if (contentType != null) HttpHeaders.contentTypeHeader: contentType,
   };
 
   return _fileRangeResponse(request, file, headers) ??
       Response.ok(
         request.method == 'HEAD' ? null : file.openRead(),
-        headers: headers,
+        headers: headers..[HttpHeaders.contentLengthHeader] = '${stat.size}',
       );
 }
 
