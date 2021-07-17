@@ -205,7 +205,7 @@ Future<Response> _handleFile(Request request, File file,
 /// Serves a range of [file], if [request] is valid 'bytes' range request.
 ///
 /// If the request does not specify a range, specifies a range of the wrong
-/// type, or has an syntactic error the range is ignored and `null` is returned.
+/// type, or has a syntactic error the range is ignored and `null` is returned.
 ///
 /// If the range request is valid but the file is not long enough to include the
 /// start of the range a range not satisfiable response is returned.
